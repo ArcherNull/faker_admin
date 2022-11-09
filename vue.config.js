@@ -24,16 +24,19 @@ const resolve = (dir) => {
 const name = adminName || 'admin'
 const externals = {}
 
-// Add environment variable
+// 添加环境变量
 process.env.VUE_APP_VERSION = require('./package.json').version
 process.env.VUE_APP_BUILD_TIME = require('dayjs')().format('YYYY-M-D HH:mm:ss')
+
+// 拿取到baseurl
+const baseUrl = process.env.VUE_APP_BASE_API
 
 // 采用了nodeJs中的模块的写法，也就是CommonJs的语法
 
 module.exports = {
   publicPath: '/', // 公共路径 默认为"/"，建议使用"./"相对路径；使用相对路径，不然后台找不到首页资源【这个也看后台那边怎么访问】
   outputDir: 'dist', // build打包输出目录
-  assetsDir: 'assets', // 静态文件输出目录，基于dist
+  assetsDir: 'static', // 静态文件输出目录，基于dist
   lintOnSave: process.env.NODE_ENV === 'development', // nodeJs中自带process模块，我们直接可以通过该变量来判断环境是否关闭语法校验
   productionSourceMap: false, // 关闭线上源码,可减少项目打包体积
   devServer: {
@@ -50,10 +53,12 @@ module.exports = {
     //   })
     // },
     proxy: {
-      '/': {
-        // target: 'https://bx.pfr.kim', // 线上域名
-        target: 'http://etmstest.dekuncn.com:60001', // 测试域名
-        // target: 'https://etms.dekuncn.com', // 线上正式域名
+      '/admin': {
+        target: baseUrl, // 测试域名
+        changOrigin: true
+      },
+      '/api': {
+        target: baseUrl, // 测试域名
         changOrigin: true
       }
     }
@@ -162,6 +167,53 @@ module.exports = {
         changeSelector: forElementUI.changeSelector
       }
     ])
+
+    // 代码分割
+    config.optimization.splitChunks({
+      chunks: 'all',
+      minSize: 30000, // 字节 引入的文件大于30kb才进行分割
+      // maxSize: 50000,         //50kb，尝试将大于50kb的文件拆分成n个50kb的文件
+      minChunks: 1, // 模块至少使用次数
+      maxAsyncRequests: 5, // 同时加载的模块数量最多是5个，只分割出同时引入的前5个文件
+      maxInitialRequests: 3, // 首页加载的时候引入的文件最多3个
+      automaticNameDelimiter: '~', // 缓存组和生成文件名称之间的连接符
+      name: true, // 缓存组里面的filename生效，覆盖默认命名
+      cacheGroups: {
+        libs: {
+          name: 'chunk-libs',
+          test: /[\\/]node_modules[\\/]/,
+          priority: 10,
+          chunks: 'initial'
+        },
+        elementUI: {
+          name: 'chunk-elementUI',
+          priority: 20,
+          test: /[\\/]node_modules[\\/]_?element-ui(.*)/
+        },
+        commons: {
+          name: 'chunk-commons',
+          test: resolve('src/components'),
+          minChunks: 3,
+          priority: 5,
+          reuseExistingChunk: true
+        }
+      }
+    })
+
+    config.optimization.runtimeChunk('single')
+
+    // webWorker
+    // 初次进入的文档标题
+    config.plugin('html').tap(args => {
+      args[0].title = name
+      return args
+    })
+    // set worker-loader
+    config.module.rule('worker').test(/\.worker\.js$/).use('worker-loader').loader('worker-loader').end()
+    // 解决：worker 热更新问题
+    config.module.rule('js').exclude.add(/\.worker\.js$/)
+    // 解决：“window is undefined”报错，这个是因为worker线程中不存在window对象，因此不能直接使用，要用this代替
+    config.output.globalObject('this')
   },
   // i18n
   pluginOptions: {

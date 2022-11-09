@@ -76,8 +76,8 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
-import util from '@/libs/util'
+import { mapState } from 'vuex'
+// import util from '@/libs/util'
 
 export default {
   name: 'Setting', // 设置
@@ -85,7 +85,7 @@ export default {
     SettingStyle: () => import('./components/SettingStyle.vue'),
     TabItemCom: () => import('./components/TabItemCom.vue'),
     AboutSystem: () => import('./components/AboutSystem.vue'),
-    Hotkeys: () => import('./components/Hotkeys.vue'),
+    // Hotkeys: () => import('./components/Hotkeys.vue'),
     PersonalCenter: () => import('./components/PersonalCenter.vue'),
     SystemTheme: () => import('./components/SystemTheme.vue')
   },

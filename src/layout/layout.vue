@@ -3,7 +3,7 @@
  * @Date: 2021-11-13 00:12:15
 -->
 <template>
-  <div class="layoutBox" :style="styleLayoutMainGroup">
+  <div class="layoutBox">
     <el-container class="layout">
       <el-aside :width="sidebarWidth" class="layout-sidebar">
         <Sidebar />
@@ -34,7 +34,7 @@
 
 <script>
 import { AppHeader, AppMain, Sidebar } from './components'
-import { mapState, mapGetters } from 'vuex'
+import { mapGetters } from 'vuex'
 import ResizeHandler from './mixin/ResizeHandler.js'
 import { resetMessageInterval } from '@/common/timePoll'
 
@@ -94,21 +94,21 @@ export default {
     /**
      * @description 最外层容器的背景图片样式
      */
-    styleLayoutMainGroup () {
-      const theme = this.$setting.theme
-      const { showCurrentTheme, localThemeList, onlineThemeList } = theme
-      const { isOnline, themeIndex } = showCurrentTheme
+    // styleLayoutMainGroup () {
+    //   const theme = this.$setting.theme
+    //   const { showCurrentTheme, localThemeList, onlineThemeList } = theme
+    //   const { isOnline, themeIndex } = showCurrentTheme
 
-      if (isOnline) {
-        return {
-          // backgroundImage: `url('${this.$baseUrl}${onlineThemeList[themeIndex].preview}')`
-        }
-      } else {
-        return {
-          // backgroundImage: `url('../assets/images/theme/simple.jpg')`
-        }
-      }
-    },
+    //   if (isOnline) {
+    //     return {
+    //       backgroundImage: `url('${this.$baseUrl}${onlineThemeList[themeIndex].preview}')`
+    //     }
+    //   } else {
+    //     return {
+    //       // backgroundImage: `url('../assets/images/theme/simple.jpg')`
+    //     }
+    //   }
+    // },
     /**
      * @description 用来实现带参路由的缓存
      */

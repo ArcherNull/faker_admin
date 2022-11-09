@@ -122,9 +122,9 @@ export default {
         this.safetyVerifyState = 'success'
         this.safetyVerifyLoading = false
       }
-    },
+    }
     // 校验按钮校验状态
-    
+
   }
 }
 </script>

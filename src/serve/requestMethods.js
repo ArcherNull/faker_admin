@@ -6,6 +6,7 @@
 
 import server from './index'
 import Qs from 'qs'
+import { httpConfig } from './httpCommon'
 
 /*
 Content-Type的类型如下：
@@ -49,25 +50,6 @@ application/x-www-form-urlencoded ： 中默认的encType，form表单数据被�
  */
 
 /**
- * @description:拼装请求体
- * @param { Object|String } paramsConfig 请求体配置
- * @return {*}
- */
-function requestParams (paramsConfig) {
-  if (paramsConfig) {
-    let config = {}
-    if (typeof paramsConfig === 'string') {
-      config = paramsConfig
-    } else {
-      config = {
-        ...config,
-        ...paramsConfig
-      }
-    }
-  }
-}
-
-/**
  * get方法，对应get请求
  * @param {String} url [请求的url地址]
  * @param {Object} params [请求时携带的参数]
@@ -78,67 +60,132 @@ export function get (url, params) {
       .get(url, {
         params: params
       })
-      .then(res => {
+      .then((res) => {
         resolve(res.data)
       })
-      .catch(err => {
+      .catch((err) => {
         reject(err.data)
       })
   })
 }
 
 /**
-   * post方法，对应post请求
-   * @param {String} url [请求的url地址]
-   * @param {Object} params [请求时携带的参数]
-   */
+ * post方法，对应post请求
+ * @param {String} url [请求的url地址]
+ * @param {Object} params [请求时携带的参数]
+ */
 export function post (url, params) {
   return new Promise((resolve, reject) => {
     server
       .post(url, Qs.stringify(params))
-      .then(res => {
+      .then((res) => {
         resolve(res.data)
       })
-      .catch(err => {
+      .catch((err) => {
         reject(err.data)
       })
   })
 }
 
 /**
-   * delete方法，对应delete请求
-   * @param {String} url [请求的url地址]
-   * @param {Object} params [请求时携带的参数]
-   */
+ * delete方法，对应delete请求
+ * @param {String} url [请求的url地址]
+ * @param {Object} params [请求时携带的参数]
+ */
 export function del (url, params) {
   return new Promise((resolve, reject) => {
     server
       .delete(url + `/${params}`)
-      .then(res => {
+      .then((res) => {
         resolve(res.data)
       })
-      .catch(err => {
+      .catch((err) => {
         reject(err.data)
       })
   })
 }
 
 /**
-   * put方法，对应put请求
-   * @param {String} url [请求的url地址]
-   * @param {Object} params [请求时携带的参数]
-   */
+ * put方法，对应put请求
+ * @param {String} url [请求的url地址]
+ * @param {Object} params [请求时携带的参数]
+ */
 export function put (url, params) {
   return new Promise((resolve, reject) => {
     server
       .put(url + `/${params}`)
-      .then(res => {
+      .then((res) => {
         resolve(res.data)
       })
-      .catch(err => {
+      .catch((err) => {
         reject(err.data)
       })
   })
+}
+
+/**
+ * put方法，对应put请求
+ * @param {String} url [请求的url地址]
+ * @param {Object} params [请求时携带的参数]
+ */
+export function upload (url, data) {
+  return new Promise((resolve, reject) => {
+    server({
+      url,
+      method: 'post',
+      baseURL: '/web',
+      data,
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+      .then((res) => {
+        resolve(res.data)
+      })
+      .catch((err) => {
+        reject(err.data)
+      })
+  })
+}
+
+/**
+ * 个性化请求方法
+ * @param {String} url [请求的url地址]
+ * @param {Object} params [请求时携带的参数]
+ */
+export function customer (customer) {
+  const { url } = customer
+  if (url) {
+    const defaultHeader = {
+      method: 'get',
+      baseURL: httpConfig.baseURL
+      // extraConfig: {
+      //   cancelRepeatRequest: false, // 去重请求 , 默认false
+      //   // 接口调用失败重新请求
+      //   reSend: {
+      //     retryTimes: 3, // 请求失败后，自动发起上线为3次
+      //     retryDelay: 2000 // 请求失败后，2s后自动发起请求
+      //   },
+      //   // http缓存
+      //   cache: {
+      //     setExpireTime: 30000 // 缓存时长
+      //   }
+      // }
+    }
+    const header = Object.assign(defaultHeader, customer)
+    if (header.data) header.data = Qs.stringify(header.data)
+
+    console.log('header=====>', header)
+    return new Promise((resolve, reject) => {
+      server(defaultHeader)
+        .then((res) => {
+          resolve(res.data)
+        })
+        .catch((err) => {
+          reject(err.data)
+        })
+    })
+  } else {
+    console.error('请求地址url，是必传参数')
+  }
 }
 
 // 请求集成
@@ -146,7 +193,9 @@ const http = {
   get,
   post,
   del,
-  put
+  put,
+  upload,
+  customer
 }
 
 export default http

@@ -11,17 +11,17 @@ import Qs from 'qs'
 // 当前配置
 export const httpConfig = {
   isDevEnv: process.env.NODE_ENV === 'development', // 当前环境
-  cancelRequest: true, // 接口中定义该项则开启取消重复请求功能
+  cancelRepeatRequest: true, // 接口中定义该项则开启取消重复请求功能
   retry: 3, // retry 请求重试次数
   retryDelay: 1000, // retryDelay 两次重试之间的时间间隔
   cache: true, // cache： true 开启当前接口缓存
   setExpireTime: 30000, // 当前接口缓存时限
   messageDuration: 3 * 1000, // 消息提示得显示时长
-  timeout: 5 * 60 * 1000, // 请求超时时长
-  baseURL: '/', // 线上域名
-  textBaseUrl: '/', // 测试域名
+  timeout: 15000, // 请求超时时长
+  baseURL: '/api', // 线上域名
+  textBaseUrl: '/api', // 测试域名
   headers: {
-    'Content-type': 'application/x-www-form-urlencoded'
+    // 'Content-type': 'application/x-www-form-urlencoded'
   }
 }
 
@@ -31,7 +31,7 @@ export const httpConfig = {
  * @return {*}
  */
 export function addErrorLog (error) {
-  store.dispatch('setting/log/push', {
+  store.dispatch('setting/log/pushErrorLog', {
     message: '数据请求异常',
     type: 'danger',
     meta: {
@@ -45,11 +45,12 @@ export function addErrorLog (error) {
  * @param { String } message 提示信息
  * @return {*}
  */
-export function showErrorAlert (message) {
+export function messageAlert (message, type = 'error', duration = 3000) {
   Message({
     message,
-    type: 'error',
-    duration: 3 * 1000
+    type,
+    showClose: true,
+    duration
   })
 }
 
@@ -65,8 +66,10 @@ export function handleError (error) {
     util.log.danger('>>>>>> Error >>>>>>')
     console.log(error)
   }
-  // 显示提示
-  showErrorAlert(error.message)
+  setTimeout(() => {
+    // 显示提示
+    messageAlert(error.message)
+  })
 }
 
 /**
@@ -96,10 +99,18 @@ export function isJsonStr (str) {
  * @return {*}
  */
 export function generateReqKey (config) {
-  // 响应的时候，response.config 中的data 是一个JSON字符串，所以需要转换一下
-  if (config && config.data && isJsonStr(config.data)) {
-    config.data = JSON.parse(config.data)
-  }
   const { method, url, params, data } = config // 请求方式，参数，请求地址，
-  return [method, url, Qs.stringify(params), Qs.stringify(data)].join('&') // 拼接
+  const paramsStr = typeof params === 'object' ? Qs.stringify(params) : params
+  const dataStr = typeof data === 'object' ? Qs.stringify(data) : data
+
+  return [method, url, paramsStr, dataStr].join('|') // 拼接
+}
+
+/**
+ * @param value
+ * @returns {string}  强数据类型校验
+ * 示例 isType(func) !== 'Function'
+ */
+export function isType (value) {
+  return Object.prototype.toString.call(value).slice(8, -1)
 }

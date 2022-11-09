@@ -19,9 +19,9 @@ ws.onmessage = function (evt) {
 
 // 实例对象的onclose属性，用于指定连接关闭后的回调函数。
 ws.onclose = function (evt) {
-  var code = event.code
-  var reason = event.reason
-  var wasClean = event.wasClean
+  // var code = event.code
+  // var reason = event.reason
+  // var wasClean = event.wasClean
   console.log('Connection closed.')
 }
 // 实例对象的onerror属性，用于指定报错时的回调函数。

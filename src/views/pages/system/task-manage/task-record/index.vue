@@ -49,10 +49,10 @@ import {
   rowData
 } from '@/components/AgGrid/common/agGrid-data-example'
 import { CustomerFilter } from './common/customerFilter'
-import { PersonFilter } from './common/personFilter'
-import { SexFilter } from './common/SexFilter'
+// import { PersonFilter } from './common/personFilter'
+// import { SexFilter } from './common/SexFilter'
 
-import { CustomTooltip } from './common/customTooltip'
+// import { CustomTooltip } from './common/customTooltip'
 
 export default {
   name: 'TaskRecord',
@@ -597,7 +597,7 @@ export default {
           ])
           break
         case 'resetSetRowData':
-          this.agTable.setRowData(mock_ag_grid_rowdata)
+          // this.agTable.setRowData(mock_ag_grid_rowdata)
           break
         case 'getSelectedRows':
           console.log('获取选中的行数据', this.agTable.getSelectedRows())
@@ -708,11 +708,10 @@ export default {
           this.agTableOptions.rowData = rowData.getRowData()
           break
         case 'exportSelectedDataAsCsv':
-          const exportObj = this.agTable.setDefaultCsvExportParams({
+          this.agTable.setDefaultCsvExportParams({
             onlySelected: true,
             fileName: 'excel.csv'
           })
-          console.log('exportObj', exportObj)
           this.agTableOptions.gridOptions.defaultCsvExportParams = this.agTable.setDefaultCsvExportParams({
             onlySelected: true,
             fileName: 'excel.csv'

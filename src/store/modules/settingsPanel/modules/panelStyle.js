@@ -3,7 +3,7 @@
  * @Date: 2022-02-07 15:37:22
  * @Description: 系统设置面板样式
  */
-import util from '@/libs/util'
+// import util from '@/libs/util'
 
 const state = {
   panelTabsPosition: 'top', // 设置面板样式定位

@@ -22,8 +22,8 @@
 
 <script>
 import { mapState } from 'vuex'
-import PreviewPDF from './components/PreviewPDF.vue'
-import SafetyVerifyDialog from './components/SafetyVerifyDialog.vue'
+// import PreviewPDF from './components/PreviewPDF.vue'
+// import SafetyVerifyDialog from './components/SafetyVerifyDialog.vue'
 
 export default {
   name: 'AppMain',

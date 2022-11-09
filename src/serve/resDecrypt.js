@@ -5,12 +5,11 @@
  */
 
 // 解密规则
-const decryptRules = {
+export const decryptRules = {
 
 }
 
-const resDecrypt = {
+export const resDecrypt = {
 
 }
 
-export default resDecrypt

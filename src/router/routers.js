@@ -2,7 +2,6 @@
  * @Author: Null
  * @Date: 2021-11-13 00:12:15
  */
-import setting from '@/setting'
 // 布局组件
 import Layout from '@/layout/layout.vue'
 import systemRoutes from './modules/system'

@@ -37,15 +37,12 @@
         <div class="page-login--form">
           <el-tabs v-model="loginType" @tab-click="handleClick">
             <el-tab-pane label="账号密码登录" name="loginForm">
-              <!-- 账号密码登录表单 -->
               <LoginForm v-if="loginType === 'loginForm'" />
             </el-tab-pane>
             <el-tab-pane label="手机号登录" name="loginPhone">
-              <!-- 验证码登录 -->
               <LoginPhone v-if="loginType === 'loginPhone'" />
             </el-tab-pane>
             <el-tab-pane label="验证码登录" name="qrCodeLogin">
-              <!-- 二维码登录 -->
               <QrCodeLogin v-if="loginType === 'qrCodeLogin'" />
             </el-tab-pane>
           </el-tabs>

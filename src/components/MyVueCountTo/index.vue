@@ -10,7 +10,7 @@
       :prefix="options.prefix"
       :suffix="options.suffix"
       :autoplay="options.autoplay"
-      :mountedCallback='mountedCallback'
+      :mounted-callback="mountedCallback"
     />
     <el-button @click="start">开始</el-button>
     <el-button @click="pause">暂停</el-button>
@@ -54,7 +54,7 @@ export default {
       this.$refs.countTo.reset()
     },
     mountedCallback () {
-      console.log('this.$refs.countTo.mountedCallback0',this.$refs.countTo.mountedCallback)
+      console.log('this.$refs.countTo.mountedCallback0', this.$refs.countTo.mountedCallback)
     }
   }
 }

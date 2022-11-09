@@ -3,42 +3,52 @@
  * @Date: 2022-06-16 17:41:20
  * @Description:请求重发封装
  */
-
-import { isJsonStr } from './httpCommon'
+import { isEmpty } from 'lodash'
+import { isType } from './httpCommon'
 
 /**
- * @param {失败信息} err
- * @param {实例化的单例} axios
+ * @param { object } error 失败信息对象
+ * @param { object } server 实例化的单例
  * @returns
  */
-export function againRequest (err, axios) {
-  const config = err.config
-  // config.retry 具体接口配置的重发次数
-  if (!config || !config.retry) return Promise.reject(err)
+export function requestAgainSend (error, server) {
+  const response = error.response
+  if (isType(response) === 'Object' && !isEmpty(response)) {
+    const config = response?.config
+    if (config) {
+      const reSend = config?.extraConfig?.reSend
+      const { retryTimes, retryDelay } = reSend
+      if (retryTimes || retryDelay) {
+        // 设置用于记录重试计数的变量 默认为0
+        reSend.__retryCount = reSend.__retryCount || 0
 
-  // 设置用于记录重试计数的变量 默认为0
-  config.__retryCount = config.__retryCount || 0
+        // 判断是否超过了重试次数
+        if (reSend.__retryCount >= retryTimes) {
+          return Promise.reject(error)
+        }
+        // 重试次数
+        reSend.__retryCount += 1
 
-  // 判断是否超过了重试次数
-  if (config.__retryCount >= config.retry) {
-    return Promise.reject(err)
-  }
-  // 重试次数
-  config.__retryCount += 1
-
-  // 延时处理
-  var backoff = new Promise(function (resolve) {
-    setTimeout(function () {
-      resolve()
-    }, config.retryDelay || 1000)
-  })
-  // 重新发起axios请求
-  return backoff.then(function () {
-    // 判断是否是JSON字符串
-    // TODO: 未确认config.data再重发时变为字符串的原因
-    if (config.data && isJsonStr(config.data)) {
-      config.data = JSON.parse(config.data)
+        // 延时处理
+        const delayFun = new Promise(function (resolve) {
+          setTimeout(() => {
+            resolve()
+          }, retryDelay || 2000)
+        })
+        // 重新发起server请求
+        return delayFun.then(() => {
+          return server(config)
+        })
+      } else {
+        console.error(`请求路径${config.url},不存在请求失败重发属性`)
+        return Promise.reject(error)
+      }
+    } else {
+      console.error(`错误对象${error},config属性不存在`)
+      return Promise.reject(error)
     }
-    return axios(config)
-  })
+  } else {
+    console.error(`错误对象${error},不存在`)
+    return Promise.reject(error)
+  }
 }

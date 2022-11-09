@@ -31,7 +31,6 @@ export default {
   computed: {
     ...mapState('settingsPanel/panelStyle', ['panelTabsItem'])
 
-
   }
 }
 </script>

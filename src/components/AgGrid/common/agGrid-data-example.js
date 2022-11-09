@@ -4,7 +4,7 @@
  * @Description: ag-grid 表格假数据展示示例
  */
 
-import { ProficiencyFilter } from './test/proficiencyFilter'
+// import { ProficiencyFilter } from './test/proficiencyFilter'
 import { NumberFloatingFilterComponent } from './test/numberFloatingFilterComponent'
 import { SexFilter } from './test/SexFilter'
 
